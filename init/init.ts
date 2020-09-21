@@ -15,12 +15,22 @@ const templates: Record<string, Template> = {
 }
 
 function guessTemplateForUsedFramework() {
-  return (
-    Object.entries(templates).find(([_name, template]) => template.test()) ?? [
-      null,
-      null,
-    ]
-  )
+  for (const [name, template] of Object.entries(templates)) {
+    const { success, payload } = template.test()
+
+    if (success) {
+      return {
+        defaultTemplate: template,
+        defaultTemplateName: name,
+        templatePayload: payload,
+      }
+    }
+  }
+
+  return {
+    defaultTemplate: null,
+    defaultTemplateName: null,
+  }
 }
 
 async function getCypressConfig() {
@@ -110,8 +120,12 @@ function printPluginHelper(pluginCode: string, pluginsFilePath: string) {
 
 async function main() {
   const { config, cypressConfigPath } = await getCypressConfig()
+  const {
+    defaultTemplate,
+    defaultTemplateName,
+    templatePayload,
+  } = guessTemplateForUsedFramework()
   const cypressProjectRoot = path.resolve(cypressConfigPath, '..')
-  const [defaultTemplateName, defaultTemplate] = guessTemplateForUsedFramework()
 
   const templateChoices = Object.keys(templates).sort(key =>
     key === defaultTemplateName ? -1 : 0,
@@ -150,7 +164,10 @@ async function main() {
 
   printCypressJsonHelp(cypressConfigPath, componentFolder)
   printSupportHelper(supportFilePath)
-  printPluginHelper(userTemplate.pluginsCode, pluginsFilePath)
+  printPluginHelper(
+    userTemplate.getPluginsCode(templatePayload),
+    pluginsFilePath,
+  )
 
   console.log(
     `Working example of component tests with ${chalk.green(

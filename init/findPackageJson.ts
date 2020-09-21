@@ -9,11 +9,17 @@ type PackageJsonLike = {
   devDependencies?: Record<string, string>
 }
 
-type FindPackageJsonResult = {
-  packageData: PackageJsonLike | undefined
-  filename: string | undefined
-  done: boolean
-}
+type FindPackageJsonResult =
+  | {
+      packageData: PackageJsonLike
+      filename: string
+      done: false
+    }
+  | {
+      packageData: undefined
+      filename: undefined
+      done: true
+    }
 
 /**
  * Return the parsed package.json that we find in a parent folder.
@@ -42,21 +48,26 @@ export function createFindPackageJsonIterator(rootPath = process.cwd()) {
   }
 
   return {
-    map: (cb: (data: PackageJsonLike) => { continue: boolean }) => {
+    map: <TPayload>(
+      cb: (
+        data: PackageJsonLike,
+        packageJsonPath: string,
+      ) => { continue: boolean; payload?: TPayload },
+    ) => {
       let stepPathToScan = rootPath
 
       while (true) {
-        const { done, packageData } = scanForPackageJson(stepPathToScan)
+        const result = scanForPackageJson(stepPathToScan)
 
-        if (done) {
+        if (result.done) {
           // didn't find the package.json
-          return false
+          return { success: false }
         }
 
-        if (packageData) {
-          const cbResult = cb(packageData!)
+        if (result.packageData) {
+          const cbResult = cb(result.packageData, result.filename)
           if (!cbResult.continue) {
-            return true
+            return { success: true, payload: cbResult.payload }
           }
         }
 

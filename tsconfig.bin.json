@@ -5,7 +5,9 @@
     "module": "CommonJS",
     "target": "ES2018",
     "types": ["node"],
-    "lib": ["ES2018"]
+    "lib": ["ES2018"],
+    "strict": true,
+    "noImplicitAny": true
   },
   "include": ["./init/**/*.ts"]
 }

@@ -11,14 +11,15 @@ const template: Template = {
     componentFolder === 'src'
       ? 'https://github.com/bahmutov/cypress-react-unit-test/tree/main/examples/react-scripts'
       : 'https://github.com/bahmutov/cypress-react-unit-test/tree/main/examples/react-scripts-folder',
-  pluginsCode: [
-    "const preprocessor = require('cypress-react-unit-test/plugins/react-scripts')",
-    'module.exports = (on, config) => {',
-    '   preprocessor(on, config)',
-    '  // IMPORTANT to return the config object',
-    '  return config',
-    '}',
-  ].join('\n'),
+  getPluginsCode: () =>
+    [
+      "const preprocessor = require('cypress-react-unit-test/plugins/react-scripts')",
+      'module.exports = (on, config) => {',
+      '   preprocessor(on, config)',
+      '  // IMPORTANT to return the config object',
+      '  return config',
+      '}',
+    ].join('\n'),
   test: () => {
     // TODO also determine ejected create react app
     const packageJsonIterator = createFindPackageJsonIterator(process.cwd())

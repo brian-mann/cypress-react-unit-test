@@ -9,14 +9,15 @@ const template: Template = {
   getExampleUrl: () =>
     'https://github.com/bahmutov/cypress-react-unit-test/tree/main/examples/nextjs',
   recommendedComponentFolder: 'cypress/component',
-  pluginsCode: [
-    "const preprocessor = require('cypress-react-unit-test/plugins/next')",
-    'module.exports = (on, config) => {',
-    '  preprocessor(on, config)',
-    '  // IMPORTANT to return the config object',
-    '  return config',
-    '}',
-  ].join('\n'),
+  getPluginsCode: () =>
+    [
+      "const preprocessor = require('cypress-react-unit-test/plugins/next')",
+      'module.exports = (on, config) => {',
+      '  preprocessor(on, config)',
+      '  // IMPORTANT to return the config object',
+      '  return config',
+      '}',
+    ].join('\n'),
   test: () => {
     const packageJsonIterator = createFindPackageJsonIterator(process.cwd())
 

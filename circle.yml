@@ -25,6 +25,9 @@ workflows:
             - run:
                 name: Build folder 🏗
                 command: npm run build
+            - run:
+                name: Run unit tests 👷
+                command: npm run test:unit
 
       - cypress/run:
           name: Example A11y
