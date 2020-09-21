@@ -1,10 +1,10 @@
 import chalk from 'chalk'
 import { createFindPackageJsonIterator } from '../findPackageJson'
 import { Template } from '../Template'
-import { semverVersionIsGreater } from '../utils'
+import { validateSemverVersion } from '../utils'
 import { MIN_SUPPORTED_VERSION } from '../versions'
 
-const template: Template = {
+export const ReactScriptsTemplate: Template = {
   recommendedComponentFolder: 'src',
   message: 'It looks like you are using create-react-app.',
   getExampleUrl: ({ componentFolder }) =>
@@ -33,7 +33,7 @@ const template: Template = {
         }
 
         if (
-          !semverVersionIsGreater(
+          !validateSemverVersion(
             allDeps['react-scripts'],
             MIN_SUPPORTED_VERSION['react-scripts'],
           )
@@ -57,5 +57,3 @@ const template: Template = {
     })
   },
 }
-
-export default template

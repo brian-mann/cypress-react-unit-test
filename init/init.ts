@@ -1,19 +1,19 @@
 #!/usr/bin/env node
 import fs from 'fs'
 import path from 'path'
-import findUp from 'find-up'
-import highlight from 'cli-highlight'
-import inqueier from 'inquirer'
-import { Template } from './Template'
-import ReactScriptsTemplate from './templates/react-scripts'
-import NextTemplate from './templates/next'
 import chalk from 'chalk'
+import findUp from 'find-up'
+import inqueier from 'inquirer'
+import highlight from 'cli-highlight'
+import { Template } from './Template'
+import { NextTemplate } from './templates/next'
 import { WebpackTemplate } from './templates/webpack-file'
+import { ReactScriptsTemplate } from './templates/react-scripts'
 
 const templates: Record<string, Template<any>> = {
-  webpack: WebpackTemplate,
   'next.js': NextTemplate,
   'create-react-app': ReactScriptsTemplate,
+  webpack: WebpackTemplate,
 }
 
 type TemplateGuess<T> = {
@@ -141,7 +141,10 @@ async function main<T>() {
     key === defaultTemplateName ? -1 : 0,
   )
 
-  const { installationTemplate, componentFolder } = await inqueier.prompt([
+  const {
+    installationTemplate,
+    componentFolder,
+  }: Record<string, string> = await inqueier.prompt([
     {
       type: 'list',
       name: 'installationTemplate',

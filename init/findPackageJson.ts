@@ -71,7 +71,13 @@ export function createFindPackageJsonIterator(rootPath = process.cwd()) {
           }
         }
 
-        stepPathToScan = path.resolve(stepPathToScan, '..')
+        const nextStepPathToScan = path.resolve(stepPathToScan, '..')
+        if (nextStepPathToScan === stepPathToScan) {
+          // we are at the root. Give up
+          return { success: false }
+        }
+
+        stepPathToScan = nextStepPathToScan
       }
     },
   }
