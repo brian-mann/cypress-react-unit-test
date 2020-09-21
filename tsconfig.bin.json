@@ -9,5 +9,6 @@
     "strict": true,
     "noImplicitAny": true
   },
+  "exclude": ["**/*.test.ts", "./init/test/*"],
   "include": ["./init/**/*.ts"]
 }

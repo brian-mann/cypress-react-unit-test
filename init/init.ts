@@ -8,26 +8,36 @@ import { Template } from './Template'
 import ReactScriptsTemplate from './templates/react-scripts'
 import NextTemplate from './templates/next'
 import chalk from 'chalk'
+import { WebpackTemplate } from './templates/webpack-file'
 
-const templates: Record<string, Template> = {
+const templates: Record<string, Template<any>> = {
+  webpack: WebpackTemplate,
   'next.js': NextTemplate,
   'create-react-app': ReactScriptsTemplate,
 }
 
-function guessTemplateForUsedFramework() {
+type TemplateGuess<T> = {
+  defaultTemplate: Template<T> | null
+  defaultTemplateName: string | null
+  templatePayload: T | null
+}
+
+function guessTemplateForUsedFramework<T>(): TemplateGuess<T> {
   for (const [name, template] of Object.entries(templates)) {
-    const { success, payload } = template.test()
+    const typedTemplate = template as Template<T>
+    const { success, payload } = typedTemplate.test(process.cwd())
 
     if (success) {
       return {
-        defaultTemplate: template,
+        defaultTemplate: typedTemplate,
         defaultTemplateName: name,
-        templatePayload: payload,
+        templatePayload: payload ?? null,
       }
     }
   }
 
   return {
+    templatePayload: null,
     defaultTemplate: null,
     defaultTemplateName: null,
   }
@@ -118,13 +128,13 @@ function printPluginHelper(pluginCode: string, pluginsFilePath: string) {
   console.log(`\n${highlightedPluginCode}\n`)
 }
 
-async function main() {
+async function main<T>() {
   const { config, cypressConfigPath } = await getCypressConfig()
   const {
     defaultTemplate,
     defaultTemplateName,
     templatePayload,
-  } = guessTemplateForUsedFramework()
+  } = guessTemplateForUsedFramework<T>()
   const cypressProjectRoot = path.resolve(cypressConfigPath, '..')
 
   const templateChoices = Object.keys(templates).sort(key =>
@@ -151,7 +161,7 @@ async function main() {
     },
   ])
 
-  const userTemplate = templates[installationTemplate]
+  const userTemplate = templates[installationTemplate] as Template<T>
   const pluginsFilePath = path.resolve(
     cypressProjectRoot,
     config.pluginsFile ?? './cypress/plugins/index.js',

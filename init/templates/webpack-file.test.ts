@@ -4,6 +4,14 @@ import { WebpackTemplate } from './webpack-file'
 describe('webpack-file install template', () => {
   afterEach(clearMockedFs)
 
+  it('suggests the right code', () => {
+    expect(
+      WebpackTemplate.getPluginsCode({
+        webpackConfigPath: './somePath/webpack.config.js',
+      }),
+    ).toContain("config.env.webpackFilename = './somePath/webpack.config.js'")
+  })
+
   it('resolves webpack.config.js', () => {
     mockFs({
       'webpack.config.js': 'module.exports = { }',
