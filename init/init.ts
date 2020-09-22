@@ -199,6 +199,10 @@ async function main<T>() {
     pluginsFilePath,
   )
 
+  if (chosenTemplate.printHelper) {
+    chosenTemplate.printHelper()
+  }
+
   console.log(
     `Working example of component tests with ${chalk.green(
       chosenTemplateName,

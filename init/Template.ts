@@ -7,4 +7,5 @@ export interface Template<T = unknown> {
     payload: T | null,
     options: { cypressProjectRoot: string },
   ) => string
+  printHelper?: () => void
 }
