@@ -3,5 +3,8 @@ export interface Template<T = unknown> {
   getExampleUrl: ({ componentFolder }: { componentFolder: string }) => string
   recommendedComponentFolder: string
   test(rootPath: string): { success: boolean; payload?: T }
-  getPluginsCode: (payload: T | null) => string
+  getPluginsCode: (
+    payload: T | null,
+    options: { pluginsFilePath: string },
+  ) => string
 }

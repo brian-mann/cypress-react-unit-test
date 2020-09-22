@@ -11,9 +11,9 @@ import { WebpackTemplate } from './templates/webpack-file'
 import { ReactScriptsTemplate } from './templates/react-scripts'
 
 const templates: Record<string, Template<any>> = {
+  webpack: WebpackTemplate,
   'next.js': NextTemplate,
   'create-react-app': ReactScriptsTemplate,
-  webpack: WebpackTemplate,
 }
 
 type TemplateGuess<T> = {
@@ -102,7 +102,9 @@ function printSupportHelper(supportFilePath: string) {
       : requireCode
 
     console.log(
-      `\n${stepNumber} This to the ${chalk.green(relativeSupportPath)}:`,
+      `\n${stepNumber} This to the ${chalk.green.underline(
+        relativeSupportPath,
+      )}:`,
     )
     console.log(
       `\n${highlight(importCodeWithPreferredStyle, { language: 'js' })}\n`,
@@ -135,7 +137,17 @@ async function main<T>() {
     defaultTemplateName,
     templatePayload,
   } = guessTemplateForUsedFramework<T>()
+
   const cypressProjectRoot = path.resolve(cypressConfigPath, '..')
+  const pluginsFilePath = path.resolve(
+    cypressProjectRoot,
+    config.pluginsFile ?? './cypress/plugins/index.js',
+  )
+
+  const supportFilePath = path.resolve(
+    cypressProjectRoot,
+    config.supportFile ?? './cypress/support/index.js',
+  )
 
   const templateChoices = Object.keys(templates).sort(key =>
     key === defaultTemplateName ? -1 : 0,
@@ -151,13 +163,21 @@ async function main<T>() {
       choices: templateChoices,
       default: defaultTemplate ? 0 : undefined,
       message: defaultTemplate?.message
-        ? `${defaultTemplate?.message}\n\n Press {Enter} to continue with this configuration or select other template from the list:`
+        ? `${defaultTemplate?.message}\n\n Press ${chalk.inverse(
+            ' Enter ',
+          )} to continue with ${chalk.green(
+            defaultTemplateName,
+          )} configuration or select other template from the list:`
         : 'We were not able to automatically determine which framework you are using. Please choose from the list which configuration to use:',
     },
     {
       type: 'input',
       name: 'componentFolder',
       filter: input => input.trim(),
+      validate: input =>
+        input === '' || !/^[\w.-]+$/.test(input)
+          ? `Directory "${input}" is invalid`
+          : true,
       message: 'Which folder would you like to use for component tests?',
       default: (answers: { installationTemplate: keyof typeof templates }) =>
         templates[answers.installationTemplate].recommendedComponentFolder,
@@ -165,27 +185,20 @@ async function main<T>() {
   ])
 
   const userTemplate = templates[installationTemplate] as Template<T>
-  const pluginsFilePath = path.resolve(
-    cypressProjectRoot,
-    config.pluginsFile ?? './cypress/plugins/index.js',
-  )
-
-  const supportFilePath = path.resolve(
-    cypressProjectRoot,
-    config.supportFile ?? './cypress/support/index.js',
-  )
 
   printCypressJsonHelp(cypressConfigPath, componentFolder)
   printSupportHelper(supportFilePath)
   printPluginHelper(
-    userTemplate.getPluginsCode(templatePayload),
+    userTemplate.getPluginsCode(templatePayload, { pluginsFilePath }),
     pluginsFilePath,
   )
 
   console.log(
     `Working example of component tests with ${chalk.green(
       defaultTemplateName,
-    )}: ${chalk.bold(userTemplate.getExampleUrl({ componentFolder }))}`,
+    )}: ${chalk.bold.underline(
+      userTemplate.getExampleUrl({ componentFolder }),
+    )}`,
   )
 
   console.log(`\nHappy testing with ${chalk.green('cypress.io')} 🔥🔥🔥\n`)
