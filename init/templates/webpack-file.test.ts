@@ -6,10 +6,15 @@ describe('webpack-file install template', () => {
 
   it('suggests the right code', () => {
     expect(
-      WebpackTemplate.getPluginsCode({
-        webpackConfigPath: './somePath/webpack.config.js',
-      }),
-    ).toContain("config.env.webpackFilename = './somePath/webpack.config.js'")
+      WebpackTemplate.getPluginsCode(
+        {
+          webpackConfigPath: '/somePath/webpack.config.js',
+        },
+        { pluginsFilePath: '/cypress/plugins/index.js' },
+      ),
+    ).toContain(
+      "config.env.webpackFilename = '../../../somePath/webpack.config.js'",
+    )
   })
 
   it('resolves webpack.config.js', () => {
