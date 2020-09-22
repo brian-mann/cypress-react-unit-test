@@ -10,11 +10,9 @@ describe('webpack-file install template', () => {
         {
           webpackConfigPath: '/somePath/webpack.config.js',
         },
-        { pluginsFilePath: '/cypress/plugins/index.js' },
+        { cypressProjectRoot: '/' },
       ),
-    ).toContain(
-      "config.env.webpackFilename = '../../../somePath/webpack.config.js'",
-    )
+    ).toContain("config.env.webpackFilename = 'somePath/webpack.config.js'")
   })
 
   it('resolves webpack.config.js', () => {

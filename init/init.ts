@@ -10,12 +10,14 @@ import { NextTemplate } from './templates/next'
 import { WebpackTemplate } from './templates/webpack-file'
 import { ReactScriptsTemplate } from './templates/react-scripts'
 import { BabelTemplate } from './templates/babel'
+import { RollupTemplate } from './templates/rollup'
 
 const templates: Record<string, Template<any>> = {
-  babel: BabelTemplate,
-  webpack: WebpackTemplate,
   'next.js': NextTemplate,
   'create-react-app': ReactScriptsTemplate,
+  webpack: WebpackTemplate,
+  rollup: RollupTemplate,
+  babel: BabelTemplate,
 }
 
 type TemplateGuess<T> = {
@@ -191,7 +193,9 @@ async function main<T>() {
   printCypressJsonHelp(cypressConfigPath, componentFolder)
   printSupportHelper(supportFilePath)
   printPluginHelper(
-    chosenTemplate.getPluginsCode(templatePayload, { pluginsFilePath }),
+    chosenTemplate.getPluginsCode(templatePayload, {
+      cypressProjectRoot,
+    }),
     pluginsFilePath,
   )
 

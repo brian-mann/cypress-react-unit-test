@@ -20,19 +20,19 @@ export const WebpackTemplate: Template<{ webpackConfigPath: string }> = {
   getExampleUrl: () =>
     'https://github.com/bahmutov/cypress-react-unit-test/tree/main/examples/webpack-file',
   recommendedComponentFolder: 'cypress/component',
-  getPluginsCode: (payload, { pluginsFilePath }) => {
+  getPluginsCode: (payload, { cypressProjectRoot }) => {
     const includeWarnComment = !Boolean(payload)
     const webpackConfigPath = payload
-      ? path.relative(pluginsFilePath, payload.webpackConfigPath)
-      : '../../webpack.config.js'
+      ? path.relative(cypressProjectRoot, payload.webpackConfigPath)
+      : './webpack.config.js'
 
     return [
       "const preprocessor = require('cypress-react-unit-test/plugins/load-webpack')",
+      'module.exports = (on, config) => {',
       includeWarnComment
         ? '// TODO replace with valid webpack config path'
         : '',
       `config.env.webpackFilename = '${webpackConfigPath}'`,
-      'module.exports = (on, config) => {',
       '  preprocessor(on, config)',
       '  // IMPORTANT to return the config object',
       '  return config',

@@ -5,6 +5,6 @@ export interface Template<T = unknown> {
   test(rootPath: string): { success: boolean; payload?: T }
   getPluginsCode: (
     payload: T | null,
-    options: { pluginsFilePath: string },
+    options: { cypressProjectRoot: string },
   ) => string
 }
