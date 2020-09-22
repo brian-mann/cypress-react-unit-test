@@ -9,8 +9,10 @@ import { Template } from './Template'
 import { NextTemplate } from './templates/next'
 import { WebpackTemplate } from './templates/webpack-file'
 import { ReactScriptsTemplate } from './templates/react-scripts'
+import { BabelTemplate } from './templates/babel'
 
 const templates: Record<string, Template<any>> = {
+  babel: BabelTemplate,
   webpack: WebpackTemplate,
   'next.js': NextTemplate,
   'create-react-app': ReactScriptsTemplate,
@@ -154,12 +156,12 @@ async function main<T>() {
   )
 
   const {
-    installationTemplate,
+    chosenTemplateName,
     componentFolder,
   }: Record<string, string> = await inqueier.prompt([
     {
       type: 'list',
-      name: 'installationTemplate',
+      name: 'chosenTemplateName',
       choices: templateChoices,
       default: defaultTemplate ? 0 : undefined,
       message: defaultTemplate?.message
@@ -175,29 +177,29 @@ async function main<T>() {
       name: 'componentFolder',
       filter: input => input.trim(),
       validate: input =>
-        input === '' || !/^[\w.-]+$/.test(input)
+        input === '' || !/^[a-zA-Z].*/.test(input)
           ? `Directory "${input}" is invalid`
           : true,
       message: 'Which folder would you like to use for component tests?',
-      default: (answers: { installationTemplate: keyof typeof templates }) =>
-        templates[answers.installationTemplate].recommendedComponentFolder,
+      default: (answers: { chosenTemplateName: keyof typeof templates }) =>
+        templates[answers.chosenTemplateName].recommendedComponentFolder,
     },
   ])
 
-  const userTemplate = templates[installationTemplate] as Template<T>
+  const chosenTemplate = templates[chosenTemplateName] as Template<T>
 
   printCypressJsonHelp(cypressConfigPath, componentFolder)
   printSupportHelper(supportFilePath)
   printPluginHelper(
-    userTemplate.getPluginsCode(templatePayload, { pluginsFilePath }),
+    chosenTemplate.getPluginsCode(templatePayload, { pluginsFilePath }),
     pluginsFilePath,
   )
 
   console.log(
     `Working example of component tests with ${chalk.green(
-      defaultTemplateName,
+      chosenTemplateName,
     )}: ${chalk.bold.underline(
-      userTemplate.getExampleUrl({ componentFolder }),
+      chosenTemplate.getExampleUrl({ componentFolder }),
     )}`,
   )
 

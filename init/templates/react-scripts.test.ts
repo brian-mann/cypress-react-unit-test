@@ -3,7 +3,7 @@ import { ReactScriptsTemplate } from './react-scripts'
 
 jest.spyOn(global.console, 'warn')
 
-describe.only('next.js install template', () => {
+describe('create-react-app install template', () => {
   beforeEach(clearMockedFs)
 
   it('finds the closest package.json and checks that react-scripts is declared as dependency', () => {
